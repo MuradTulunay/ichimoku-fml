@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Namespace xmlns:Formula="http://finance.easychart.net" Name="FML.ICHIMOKU" Version="1.0.0.1">
+  <Description>ICHIMOKU Cloud Technical Analysis Indicators</Description>
+  <GroupOnly>false</GroupOnly>
+  <Namespaces>
+    <Namespace Name="Ichimoku Cloud Indicators" Version="">
+      <Description>Ichimoku Kinko Hyo (Cloud) Technical Analysis System</Description>
+      <GroupOnly>true</GroupOnly>
+      <Namespaces />
+      <Programs>
+        <Program Name="ICHIMOKU_BASIC" IsMainView="true">
+          <FullName>Ichimoku Basic Lines</FullName>
+          <Description>Ichimoku Cloud temel 5 çizgisi - Tenkan Sen, Kijun Sen, Senkou Span A, Senkou Span B ve Chikou Span</Description>
+          <Code>TENKAN:(HHV(H,TENKAN_P)+LLV(L,TENKAN_P))/2;
+KIJUN:(HHV(H,KIJUN_P)+LLV(L,KIJUN_P))/2;
+SENKOU_A:REF((TENKAN+KIJUN)/2,-SENKOU_P);
+SENKOU_B:REF((HHV(H,SENKOU_B_P)+LLV(L,SENKOU_B_P))/2,-SENKOU_P);
+CHIKOU:REF(C,CHIKOU_P);</Code>
+          <DisabledCycle />
+          <Params>
+            <FormulaParam Name="TENKAN_P" DefaultValue="9" MinValue="1" MaxValue="50" StepValue="1" Description="Tenkan Sen Periyodu" ParamType="double" />
+            <FormulaParam Name="KIJUN_P" DefaultValue="26" MinValue="1" MaxValue="100" StepValue="1" Description="Kijun Sen Periyodu" ParamType="double" />
+            <FormulaParam Name="SENKOU_P" DefaultValue="26" MinValue="1" MaxValue="50" StepValue="1" Description="Senkou Spans Kaydırma" ParamType="double" />
+            <FormulaParam Name="SENKOU_B_P" DefaultValue="52" MinValue="1" MaxValue="200" StepValue="1" Description="Senkou Span B Periyodu" ParamType="double" />
+            <FormulaParam Name="CHIKOU_P" DefaultValue="26" MinValue="1" MaxValue="50" StepValue="1" Description="Chikou Span Kaydırma" ParamType="double" />
+          </Params>
+        </Program>
+        <Program Name="ICHIMOKU_CLOUD" IsMainView="true">
+          <FullName>Ichimoku Cloud with Fill</FullName>
+          <Description>Ichimoku Cloud - Kumo bölgesi vurgulamalı görünüm (Bullish yeşil, Bearish kırmızı)</Description>
+          <Code>TENKAN:(HHV(H,TENKAN_P)+LLV(L,TENKAN_P))/2;
+KIJUN:(HHV(H,KIJUN_P)+LLV(L,KIJUN_P))/2;
+SENKOU_A:REF((TENKAN+KIJUN)/2,-SENKOU_P);
+SENKOU_B:REF((HHV(H,SENKOU_B_P)+LLV(L,SENKOU_B_P))/2,-SENKOU_P);
+CHIKOU:REF(C,CHIKOU_P);
+CLOUD_BULLISH:=SENKOU_A>SENKOU_B;
+CLOUD_BEARISH:=SENKOU_A<SENKOU_B;
+FILLRGN(CLOUD_BULLISH,SENKOU_A,SENKOU_B),BrushGreen;
+FILLRGN(CLOUD_BEARISH,SENKOU_A,SENKOU_B),BrushRed;</Code>
+          <DisabledCycle />
+          <Params>
+            <FormulaParam Name="TENKAN_P" DefaultValue="9" MinValue="1" MaxValue="50" StepValue="1" Description="Tenkan Sen Periyodu" ParamType="double" />
+            <FormulaParam Name="KIJUN_P" DefaultValue="26" MinValue="1" MaxValue="100" StepValue="1" Description="Kijun Sen Periyodu" ParamType="double" />
+            <FormulaParam Name="SENKOU_P" DefaultValue="26" MinValue="1" MaxValue="50" StepValue="1" Description="Senkou Spans Kaydırma" ParamType="double" />
+            <FormulaParam Name="SENKOU_B_P" DefaultValue="52" MinValue="1" MaxValue="200" StepValue="1" Description="Senkou Span B Periyodu" ParamType="double" />
+            <FormulaParam Name="CHIKOU_P" DefaultValue="26" MinValue="1" MaxValue="50" StepValue="1" Description="Chikou Span Kaydırma" ParamType="double" />
+            <FormulaParam Name="CLOUD_TRANSPARENCY" DefaultValue="30" MinValue="10" MaxValue="90" StepValue="5" Description="Cloud Şeffaflığı %" ParamType="double" />
+          </Params>
+        </Program>
+        <Program Name="ICHIMOKU_SIGNALS" IsMainView="false">
+          <FullName>Ichimoku Trading Signals</FullName>
+          <Description>Ichimoku trend sinyalleri ve crossover analizleri - TK Cross, Cloud Breakout, Chikou Span sinyalleri</Description>
+          <Code>TENKAN:=(HHV(H,TENKAN_P)+LLV(L,TENKAN_P))/2;
+KIJUN:=(HHV(H,KIJUN_P)+LLV(L,KIJUN_P))/2;
+SENKOU_A:=REF((TENKAN+KIJUN)/2,-SENKOU_P);
+SENKOU_B:=REF((HHV(H,SENKOU_B_P)+LLV(L,SENKOU_B_P))/2,-SENKOU_P);
+CHIKOU:=REF(C,CHIKOU_P);
+TK_BULLISH:CROSS(TENKAN,KIJUN);
+TK_BEARISH:CROSS(KIJUN,TENKAN);
+CLOUD_BREAKOUT_UP:CROSS(C,MAX(SENKOU_A,SENKOU_B));
+CLOUD_BREAKOUT_DOWN:CROSS(MIN(SENKOU_A,SENKOU_B),C);
+CHIKOU_CLEAR:C>MAX(SENKOU_A,SENKOU_B) AND CHIKOU>REF(C,CHIKOU_P);
+STRONG_BUY:TK_BULLISH AND CLOUD_BREAKOUT_UP AND CHIKOU_CLEAR;
+STRONG_SELL:TK_BEARISH AND CLOUD_BREAKOUT_DOWN;</Code>
+          <DisabledCycle />
+          <Params>
+            <FormulaParam Name="TENKAN_P" DefaultValue="9" MinValue="1" MaxValue="50" StepValue="1" Description="Tenkan Sen Periyodu" ParamType="double" />
+            <FormulaParam Name="KIJUN_P" DefaultValue="26" MinValue="1" MaxValue="100" StepValue="1" Description="Kijun Sen Periyodu" ParamType="double" />
+            <FormulaParam Name="SENKOU_P" DefaultValue="26" MinValue="1" MaxValue="50" StepValue="1" Description="Senkou Spans Kaydırma" ParamType="double" />
+            <FormulaParam Name="SENKOU_B_P" DefaultValue="52" MinValue="1" MaxValue="200" StepValue="1" Description="Senkou Span B Periyodu" ParamType="double" />
+            <FormulaParam Name="CHIKOU_P" DefaultValue="26" MinValue="1" MaxValue="50" StepValue="1" Description="Chikou Span Kaydırma" ParamType="double" />
+            <FormulaParam Name="SIGNAL_STRENGTH" DefaultValue="2" MinValue="1" MaxValue="3" StepValue="1" Description="Sinyal Hassasiyeti (1=Zayıf, 2=Orta, 3=Güçlü)" ParamType="double" />
+            <FormulaParam Name="SHOW_CROSSOVERS" DefaultValue="1" MinValue="0" MaxValue="1" StepValue="1" Description="Crossover Sinyallerini Göster (0=Hayır, 1=Evet)" ParamType="double" />
+          </Params>
+        </Program>
+        <Program Name="ICHIMOKU_COMPLETE" IsMainView="true">
+          <FullName>Ichimoku Complete System</FullName>
+          <Description>Ichimoku tam sistemi - Tüm çizgiler, cloud fill, trading arrows ve trend analizi</Description>
+          <Code>TENKAN:=(HHV(H,TENKAN_P)+LLV(L,TENKAN_P))/2;
+KIJUN:=(HHV(H,KIJUN_P)+LLV(L,KIJUN_P))/2;
+SENKOU_A:=REF((TENKAN+KIJUN)/2,-SENKOU_P);
+SENKOU_B:=REF((HHV(H,SENKOU_B_P)+LLV(L,SENKOU_B_P))/2,-SENKOU_P);
+CHIKOU:=REF(C,CHIKOU_P);
+CLOUD_BULLISH:=SENKOU_A>SENKOU_B;
+CLOUD_BEARISH:=SENKOU_A<SENKOU_B;
+TK_BULLISH:=CROSS(TENKAN,KIJUN);
+TK_BEARISH:=CROSS(KIJUN,TENKAN);
+CLOUD_BREAKOUT_UP:=CROSS(C,MAX(SENKOU_A,SENKOU_B));
+CLOUD_BREAKOUT_DOWN:=CROSS(MIN(SENKOU_A,SENKOU_B),C);
+CHIKOU_CLEAR:=C>MAX(SENKOU_A,SENKOU_B) AND CHIKOU>REF(C,CHIKOU_P);
+BUY_SIGNAL:=TK_BULLISH AND CLOUD_BREAKOUT_UP AND CHIKOU_CLEAR;
+SELL_SIGNAL:=TK_BEARISH AND CLOUD_BREAKOUT_DOWN;
+TREND_UP:=C>MAX(SENKOU_A,SENKOU_B) AND TENKAN>KIJUN;
+TREND_DOWN:=C<MIN(SENKOU_A,SENKOU_B) AND TENKAN<KIJUN;
+TENKAN;KIJUN;SENKOU_A;SENKOU_B;CHIKOU;
+FILLRGN(CLOUD_BULLISH,SENKOU_A,SENKOU_B),BrushGreen;
+FILLRGN(CLOUD_BEARISH,SENKOU_A,SENKOU_B),BrushRed;
+DRAWICON(BUY_SIGNAL,C,'Buy.Gif'),Bottom;
+DRAWICON(SELL_SIGNAL,C,'Sell.Gif'),Top;</Code>
+          <DisabledCycle />
+          <Params>
+            <FormulaParam Name="TENKAN_P" DefaultValue="9" MinValue="1" MaxValue="50" StepValue="1" Description="Tenkan Sen Periyodu" ParamType="double" />
+            <FormulaParam Name="KIJUN_P" DefaultValue="26" MinValue="1" MaxValue="100" StepValue="1" Description="Kijun Sen Periyodu" ParamType="double" />
+            <FormulaParam Name="SENKOU_P" DefaultValue="26" MinValue="1" MaxValue="50" StepValue="1" Description="Senkou Spans Kaydırma" ParamType="double" />
+            <FormulaParam Name="SENKOU_B_P" DefaultValue="52" MinValue="1" MaxValue="200" StepValue="1" Description="Senkou Span B Periyodu" ParamType="double" />
+            <FormulaParam Name="CHIKOU_P" DefaultValue="26" MinValue="1" MaxValue="50" StepValue="1" Description="Chikou Span Kaydırma" ParamType="double" />
+            <FormulaParam Name="SHOW_ARROWS" DefaultValue="1" MinValue="0" MaxValue="1" StepValue="1" Description="Alım Satım Okları (0=Hayır, 1=Evet)" ParamType="double" />
+            <FormulaParam Name="TREND_FILTER" DefaultValue="1" MinValue="0" MaxValue="1" StepValue="1" Description="Trend Filtresi (0=Kapalı, 1=Açık)" ParamType="double" />
+          </Params>
+        </Program>
+        <Program Name="ICHIMOKU_ADVANCED" IsMainView="false">
+          <FullName>Ichimoku Advanced Analysis</FullName>
+          <Description>İleri seviye Ichimoku analizi - Kumo Twist, Chikou Confirmation, Multi-timeframe desteği</Description>
+          <Code>TENKAN:=(HHV(H,TENKAN_P)+LLV(L,TENKAN_P))/2;
+KIJUN:=(HHV(H,KIJUN_P)+LLV(L,KIJUN_P))/2;
+SENKOU_A:=REF((TENKAN+KIJUN)/2,-SENKOU_P);
+SENKOU_B:=REF((HHV(H,SENKOU_B_P)+LLV(L,SENKOU_B_P))/2,-SENKOU_P);
+CHIKOU:=REF(C,CHIKOU_P);
+KUMO_TWIST_BULLISH:CROSS(SENKOU_A,SENKOU_B);
+KUMO_TWIST_BEARISH:CROSS(SENKOU_B,SENKOU_A);
+CHIKOU_ABOVE_CLOUD:CHIKOU>MAX(SENKOU_A,SENKOU_B);
+CHIKOU_BELOW_CLOUD:CHIKOU<MIN(SENKOU_A,SENKOU_B);
+PERFECT_STORM_BUY:CROSS(TENKAN,KIJUN) AND C>MAX(SENKOU_A,SENKOU_B) AND CHIKOU_ABOVE_CLOUD AND KUMO_TWIST_BULLISH;
+PERFECT_STORM_SELL:CROSS(KIJUN,TENKAN) AND C<MIN(SENKOU_A,SENKOU_B) AND CHIKOU_BELOW_CLOUD AND KUMO_TWIST_BEARISH;
+VERY_BULLISH:C>MAX(SENKOU_A,SENKOU_B) AND TENKAN>KIJUN AND CHIKOU_ABOVE_CLOUD;
+VERY_BEARISH:C<MIN(SENKOU_A,SENKOU_B) AND TENKAN<KIJUN AND CHIKOU_BELOW_CLOUD;
+KUMO_TWIST_BULLISH;KUMO_TWIST_BEARISH;CHIKOU_ABOVE_CLOUD;CHIKOU_BELOW_CLOUD;PERFECT_STORM_BUY;PERFECT_STORM_SELL;VERY_BULLISH;VERY_BEARISH;</Code>
+          <DisabledCycle />
+          <Params>
+            <FormulaParam Name="TENKAN_P" DefaultValue="9" MinValue="1" MaxValue="50" StepValue="1" Description="Tenkan Sen Periyodu" ParamType="double" />
+            <FormulaParam Name="KIJUN_P" DefaultValue="26" MinValue="1" MaxValue="100" StepValue="1" Description="Kijun Sen Periyodu" ParamType="double" />
+            <FormulaParam Name="SENKOU_P" DefaultValue="26" MinValue="1" MaxValue="50" StepValue="1" Description="Senkou Spans Kaydırma" ParamType="double" />
+            <FormulaParam Name="SENKOU_B_P" DefaultValue="52" MinValue="1" MaxValue="200" StepValue="1" Description="Senkou Span B Periyodu" ParamType="double" />
+            <FormulaParam Name="CHIKOU_P" DefaultValue="26" MinValue="1" MaxValue="50" StepValue="1" Description="Chikou Span Kaydırma" ParamType="double" />
+            <FormulaParam Name="REQUIRE_CHIKOU_CLEAR" DefaultValue="1" MinValue="0" MaxValue="1" StepValue="1" Description="Chikou Temizliği Zorunlu (0=Hayır, 1=Evet)" ParamType="double" />
+          </Params>
+        </Program>
+      </Programs>
+    </Namespace>
+  </Namespaces>
+</Namespace>
